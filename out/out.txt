@@ -1,29 +1,42 @@
-3.948457	4.000000	0.012886	0.012886
-10.251066	4.000000	1.562767	0.787826
-7.828814	4.000000	0.957203	0.844285
-4.550618	4.000000	0.137655	0.667628
-15.451167	6.000000	1.575195	0.849141
-3.331747	6.000000	0.444709	0.781736
-3.116481	7.000000	0.554788	0.749315
-4.082445	7.000000	0.416794	0.707749
-4.810902	12.000000	0.599092	0.695676
-6.799204	10.000000	0.320080	0.658117
-5.943590	7.000000	0.150916	0.612008
-4.781948	11.000000	0.565277	0.608113
-4.602014	8.000000	0.424748	0.594008
-4.603506	6.000000	0.232749	0.568204
-4.471373	7.000000	0.361232	0.554406
-6.496428	6.000000	0.082738	0.524927
-6.903631	8.000000	0.137046	0.502110
-6.002506	10.000000	0.399749	0.496424
-5.758525	7.000000	0.177354	0.479630
-25.404778	11.000000	1.309525	0.521125
-16.968536	7.000000	1.424077	0.564123
-8.930866	8.000000	0.116358	0.543770
-9.082282	6.000000	0.513714	0.542463
-8.325533	4.000000	1.081383	0.564918
-8.125113	5.000000	0.625023	0.567322
-6.200396	5.000000	0.240079	0.554736
-5.737731	8.000000	0.282784	0.544664
-8.397873	6.000000	0.399645	0.539484
-8.153746	2.000000	3.076873	0.626981
+pred_DBN:3.987449	pred_AdaBoost:3.600000	correct:4.000000		loss_DBN:0.003138	loss_AdaBoost:0.100000		loss_avg_DBN:0.003138	loss_avg_AdaBoost:0.100000
+pred_DBN:13.709692	pred_AdaBoost:4.909091	correct:4.000000		loss_DBN:2.427423	loss_AdaBoost:0.227273		loss_avg_DBN:1.215280	loss_avg_AdaBoost:0.163636
+pred_DBN:6.987025	pred_AdaBoost:4.333333	correct:4.000000		loss_DBN:0.746756	loss_AdaBoost:0.083333		loss_avg_DBN:1.059106	loss_avg_AdaBoost:0.136869
+pred_DBN:5.045589	pred_AdaBoost:4.000000	correct:4.000000		loss_DBN:0.261397	loss_AdaBoost:0.000000		loss_avg_DBN:0.859679	loss_avg_AdaBoost:0.102652
+pred_DBN:6.996645	pred_AdaBoost:5.000000	correct:6.000000		loss_DBN:0.166108	loss_AdaBoost:0.166667		loss_avg_DBN:0.720964	loss_avg_AdaBoost:0.115455
+pred_DBN:5.924242	pred_AdaBoost:4.125000	correct:6.000000		loss_DBN:0.012626	loss_AdaBoost:0.312500		loss_avg_DBN:0.602908	loss_avg_AdaBoost:0.148295
+pred_DBN:1.862273	pred_AdaBoost:5.000000	correct:7.000000		loss_DBN:0.733961	loss_AdaBoost:0.285714		loss_avg_DBN:0.621630	loss_avg_AdaBoost:0.167927
+pred_DBN:4.176749	pred_AdaBoost:5.666667	correct:7.000000		loss_DBN:0.403322	loss_AdaBoost:0.190476		loss_avg_DBN:0.594341	loss_avg_AdaBoost:0.170745
+pred_DBN:7.007227	pred_AdaBoost:5.800000	correct:12.000000		loss_DBN:0.416064	loss_AdaBoost:0.516667		loss_avg_DBN:0.574533	loss_avg_AdaBoost:0.209181
+pred_DBN:14.486738	pred_AdaBoost:11.000000	correct:10.000000		loss_DBN:0.448674	loss_AdaBoost:0.100000		loss_avg_DBN:0.561947	loss_avg_AdaBoost:0.198263
+pred_DBN:7.228608	pred_AdaBoost:9.500000	correct:7.000000		loss_DBN:0.032658	loss_AdaBoost:0.357143		loss_avg_DBN:0.513830	loss_avg_AdaBoost:0.212707
+pred_DBN:5.369123	pred_AdaBoost:5.600000	correct:11.000000		loss_DBN:0.511898	loss_AdaBoost:0.490909		loss_avg_DBN:0.513669	loss_avg_AdaBoost:0.235890
+pred_DBN:5.739704	pred_AdaBoost:6.800000	correct:8.000000		loss_DBN:0.282537	loss_AdaBoost:0.150000		loss_avg_DBN:0.495889	loss_avg_AdaBoost:0.229283
+pred_DBN:5.653262	pred_AdaBoost:6.750000	correct:6.000000		loss_DBN:0.057790	loss_AdaBoost:0.125000		loss_avg_DBN:0.464597	loss_avg_AdaBoost:0.221834
+pred_DBN:4.185042	pred_AdaBoost:4.593750	correct:7.000000		loss_DBN:0.402137	loss_AdaBoost:0.343750		loss_avg_DBN:0.460433	loss_avg_AdaBoost:0.229962
+pred_DBN:8.448040	pred_AdaBoost:6.956522	correct:6.000000		loss_DBN:0.408007	loss_AdaBoost:0.159420		loss_avg_DBN:0.457156	loss_avg_AdaBoost:0.225553
+pred_DBN:7.668027	pred_AdaBoost:8.000000	correct:8.000000		loss_DBN:0.041497	loss_AdaBoost:0.000000		loss_avg_DBN:0.432705	loss_avg_AdaBoost:0.212285
+pred_DBN:7.407070	pred_AdaBoost:7.147059	correct:10.000000		loss_DBN:0.259293	loss_AdaBoost:0.285294		loss_avg_DBN:0.423071	loss_avg_AdaBoost:0.216341
+pred_DBN:9.581232	pred_AdaBoost:7.680000	correct:7.000000		loss_DBN:0.368747	loss_AdaBoost:0.097143		loss_avg_DBN:0.420212	loss_avg_AdaBoost:0.210068
+pred_DBN:13.291660	pred_AdaBoost:7.884615	correct:11.000000		loss_DBN:0.208333	loss_AdaBoost:0.283217		loss_avg_DBN:0.409618	loss_avg_AdaBoost:0.213725
+pred_DBN:16.116886	pred_AdaBoost:9.466667	correct:7.000000		loss_DBN:1.302412	loss_AdaBoost:0.352381		loss_avg_DBN:0.452132	loss_avg_AdaBoost:0.220328
+pred_DBN:8.687172	pred_AdaBoost:8.750000	correct:8.000000		loss_DBN:0.085896	loss_AdaBoost:0.093750		loss_avg_DBN:0.435485	loss_avg_AdaBoost:0.214574
+pred_DBN:9.933341	pred_AdaBoost:8.625000	correct:6.000000		loss_DBN:0.655557	loss_AdaBoost:0.437500		loss_avg_DBN:0.445054	loss_avg_AdaBoost:0.224267
+pred_DBN:7.321897	pred_AdaBoost:7.666667	correct:4.000000		loss_DBN:0.830474	loss_AdaBoost:0.916667		loss_avg_DBN:0.461113	loss_avg_AdaBoost:0.253117
+pred_DBN:5.437631	pred_AdaBoost:4.000000	correct:5.000000		loss_DBN:0.087526	loss_AdaBoost:0.200000		loss_avg_DBN:0.446169	loss_avg_AdaBoost:0.250992
+pred_DBN:5.860848	pred_AdaBoost:5.000000	correct:5.000000		loss_DBN:0.172170	loss_AdaBoost:0.000000		loss_avg_DBN:0.435631	loss_avg_AdaBoost:0.241339
+pred_DBN:5.311972	pred_AdaBoost:6.000000	correct:8.000000		loss_DBN:0.336004	loss_AdaBoost:0.250000		loss_avg_DBN:0.431941	loss_avg_AdaBoost:0.241659
+pred_DBN:8.596146	pred_AdaBoost:9.350000	correct:6.000000		loss_DBN:0.432691	loss_AdaBoost:0.558333		loss_avg_DBN:0.431968	loss_avg_AdaBoost:0.252969
+pred_DBN:6.972361	pred_AdaBoost:6.235294	correct:2.000000		loss_DBN:2.486181	loss_AdaBoost:2.117647		loss_avg_DBN:0.502803	loss_avg_AdaBoost:0.317268
+pred_DBN:4.478383	pred_AdaBoost:3.600000	correct:3.000000		loss_DBN:0.492794	loss_AdaBoost:0.200000		loss_avg_DBN:0.502469	loss_avg_AdaBoost:0.313359
+pred_DBN:4.443574	pred_AdaBoost:4.000000	correct:4.000000		loss_DBN:0.110893	loss_AdaBoost:0.000000		loss_avg_DBN:0.489838	loss_avg_AdaBoost:0.303251
+pred_DBN:4.989103	pred_AdaBoost:5.000000	correct:5.000000		loss_DBN:0.002179	loss_AdaBoost:0.000000		loss_avg_DBN:0.474598	loss_avg_AdaBoost:0.293774
+pred_DBN:4.938148	pred_AdaBoost:5.375000	correct:4.000000		loss_DBN:0.234537	loss_AdaBoost:0.343750		loss_avg_DBN:0.467324	loss_avg_AdaBoost:0.295289
+pred_DBN:5.528345	pred_AdaBoost:4.500000	correct:12.000000		loss_DBN:0.539305	loss_AdaBoost:0.625000		loss_avg_DBN:0.469441	loss_avg_AdaBoost:0.304986
+pred_DBN:9.292060	pred_AdaBoost:8.058824	correct:15.000000		loss_DBN:0.380529	loss_AdaBoost:0.462745		loss_avg_DBN:0.466900	loss_avg_AdaBoost:0.309494
+pred_DBN:10.891375	pred_AdaBoost:12.375000	correct:14.000000		loss_DBN:0.222045	loss_AdaBoost:0.116071		loss_avg_DBN:0.460099	loss_avg_AdaBoost:0.304121
+pred_DBN:11.910257	pred_AdaBoost:14.000000	correct:11.000000		loss_DBN:0.082751	loss_AdaBoost:0.272727		loss_avg_DBN:0.449900	loss_avg_AdaBoost:0.303272
+pred_DBN:10.008259	pred_AdaBoost:8.684211	correct:13.000000		loss_DBN:0.230134	loss_AdaBoost:0.331984		loss_avg_DBN:0.444117	loss_avg_AdaBoost:0.304028
+pred_DBN:10.426766	pred_AdaBoost:11.000000	correct:10.000000		loss_DBN:0.042677	loss_AdaBoost:0.100000		loss_avg_DBN:0.433824	loss_avg_AdaBoost:0.298796
+pred_DBN:8.684007	pred_AdaBoost:7.521739	correct:6.000000		loss_DBN:0.447334	loss_AdaBoost:0.253623		loss_avg_DBN:0.434161	loss_avg_AdaBoost:0.297667
+pred_DBN:5.396136	pred_AdaBoost:6.857143	correct:12.000000		loss_DBN:0.550322	loss_AdaBoost:0.428571		loss_avg_DBN:0.436995	loss_avg_AdaBoost:0.300860
+pred_DBN:10.482704	pred_AdaBoost:10.000000	correct:7.000000		loss_DBN:0.497529	loss_AdaBoost:0.428571		loss_avg_DBN:0.438436	loss_avg_AdaBoost:0.303901

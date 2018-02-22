@@ -37,16 +37,16 @@ weather = np.array(weather)
 
 use_min_max_scaler = True
 use_all_data = True
-step = 2
-train_deep = 3
-train_start = 4
-predict_start = 4
+step = 1
+train_deep = 50
+train_start = 50
+predict_start = 51
 
 print_log = True
 
 assert step > 0
-assert train_deep > step and train_start >= train_deep
-assert predict_start >= train_start
+assert train_deep >= step and train_start >= train_deep
+assert predict_start > train_start
 
 regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
                                     learning_rate_rbm=0.01,
@@ -81,17 +81,6 @@ for i in range(step + 1, data_num):
     Data = np.row_stack((Data, train_data_last))
     Target = np.row_stack((Target, pm25[i]))
 
-    # training
-    if i > train_start:
-        if use_min_max_scaler:
-            tmp_data = min_max_scaler.fit_transform(Data[i - train_deep:i])
-        else:
-            tmp_data = Data[i - train_deep:i]
-        if print_log:
-            print("Data:", Data.shape)
-            print("tmp_data:", tmp_data.shape)
-        regressor.fit(tmp_data, Target[i - train_deep:i, 0])
-
     # predicting
     if i > predict_start:
         if use_min_max_scaler:
@@ -109,6 +98,17 @@ for i in range(step + 1, data_num):
         correct.append(pm25[i])
         plt.plot(range(i - predict_start), predict, 'r-o', range(i - predict_start), correct, 'b-o')
         plt.savefig(path_out_png)
+
+    # training
+    if i > train_start:
+        if use_min_max_scaler:
+            tmp_data = min_max_scaler.fit_transform(Data[i - train_deep:i])
+        else:
+            tmp_data = Data[i - train_deep:i]
+        if print_log:
+            print("Data:", Data.shape)
+            print("tmp_data:", tmp_data.shape)
+        regressor.fit(tmp_data, Target[i - train_deep:i, 0])
 
 if print_log:
     print('Done.\nR-squared: %f\nMSE: %f' % (r2_score(correct, predict), mean_squared_error(correct, predict)))

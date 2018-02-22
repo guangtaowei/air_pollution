@@ -59,7 +59,7 @@ min_max_scaler = MinMaxScaler()
 open(path_out_txt, 'w').close()
 
 if use_all_data:
-    Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
+    Data = np.concatenate((temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
 else:
     Data = pm25[0:step]
 
@@ -72,7 +72,7 @@ for i in range(step + 1, data_num):
 
     if use_all_data:
         train_data_last = np.concatenate(
-            (pm25[i - step:i], temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]),
+            (temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]),
             axis=0)
     else:
         train_data_last = pm25[i - step:i]

@@ -12,12 +12,17 @@ import xlrd
 import math
 import matplotlib.pyplot as plt
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+path_DBN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "deep-belief-network")
+sys.path.append(path_DBN)
 from dbn.tensorflow import SupervisedDBNRegression
 
 # from dbn. import SupervisedDBNClassification
 
-data = xlrd.open_workbook('data.xls')
+path_data = "data/data.xls"
+path_out_txt = "out/out.txt"
+path_out_png = "out/out.png"
+
+data = xlrd.open_workbook(path_data)
 table = data.sheet_by_index(0)
 data_num = table.nrows - 1
 pm25 = table.col_values(2)[1:]
@@ -33,8 +38,14 @@ weather = np.array(weather)
 
 use_min_max_scaler = True
 use_all_data = True
-step = 1
-train_num = 5
+step = 2
+train_start = 10
+train_deep = 10
+
+print_log = True
+
+assert step > 0
+assert train_deep > 1 and train_start >= train_deep
 
 regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
                                     learning_rate_rbm=0.01,
@@ -44,37 +55,46 @@ regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
                                     batch_size=16,
                                     activation_function='relu')
 min_max_scaler = MinMaxScaler()
-open("out.txt", 'w').close()
+open(path_out_txt, 'w').close()
 
 if use_all_data:
     Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
 else:
     Data = pm25[0:step]
+
 Target = pm25[step]
-print(Data)
-print(Target)
 predict = []
 correct = []
 loss_total = 0.0
+
 for i in range(step + 1, data_num):
+
     if use_all_data:
         train_data_last = np.concatenate(
             (pm25[i - step:i], temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]),
             axis=0)
     else:
         train_data_last = pm25[i - step:i]
+    if print_log:
+        print("train_data_last:", train_data_last.shape)
+    Data = np.row_stack((Data, train_data_last))
+    Target = np.row_stack((Target, pm25[i]))
 
-    if i > step + 2:
+    # training
+    if i > step + train_deep:
         if use_min_max_scaler:
-            print(Data.shape)
-            tmp_data = min_max_scaler.fit_transform(Data)
+            tmp_data = min_max_scaler.fit_transform(Data[i - train_deep:i])
         else:
-            tmp_data = Data
-        regressor.fit(tmp_data, Target[:, 0])
+            tmp_data = Data[i - train_deep:i]
+        if print_log:
+            print("Data:", Data.shape)
+            print("tmp_data:", tmp_data.shape)
+        regressor.fit(tmp_data, Target[i - train_deep:i, 0])
 
-    if i > step + 1 + train_num:
+    # predicting
+    if i > step + train_start:
         if use_min_max_scaler:
-            train_data_last = train_data_last.reshape((1, 5))
+            train_data_last = train_data_last.reshape((1, train_data_last.size))
             tmp_test = min_max_scaler.transform(train_data_last)
         else:
             tmp_test = train_data_last
@@ -82,19 +102,17 @@ for i in range(step + 1, data_num):
         tmp_pred = regressor.predict(tmp_test)
         # print(tmp_pred[0][0])
         # print(pm25[i])
-        with open("out.txt", 'a') as f:  # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
+        with open(path_out_txt, 'a') as f:  # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
             loss = math.sqrt(math.pow(tmp_pred[0][0] - pm25[i], 2)) / pm25[i]
             loss_total += loss
-            f.write("%f\t%f\t%f\t%f\n" % (tmp_pred[0][0], pm25[i], loss, loss_total / (i - step - 1 - train_num)))
+            f.write("%f\t%f\t%f\t%f\n" % (tmp_pred[0][0], pm25[i], loss, loss_total / (i - step - train_start)))
         predict.append(tmp_pred[0][0])
         correct.append(pm25[i])
-        plt.plot(range(i - step - 1 - train_num), predict, 'r-o', range(i - step - 1 - train_num), correct, 'b-o')
-        plt.savefig("out.png")
+        plt.plot(range(i - step - train_start), predict, 'r-o', range(i - step - train_start), correct, 'b-o')
+        plt.savefig(path_out_png)
 
-    Data = np.row_stack((Data, train_data_last))
-    Target = np.row_stack((Target, pm25[i]))
-
-print('Done.\nR-squared: %f\nMSE: %f' % (r2_score(correct, predict), mean_squared_error(correct, predict)))
+if print_log:
+    print('Done.\nR-squared: %f\nMSE: %f' % (r2_score(correct, predict), mean_squared_error(correct, predict)))
 # X = Data
 # Y = Target[:, 0]
 # print(X.shape)

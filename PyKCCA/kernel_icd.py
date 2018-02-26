@@ -44,7 +44,7 @@ def kernel_icd(X, kernel, m = None, precision = 1e-6):
         dtrace = np.sum(d[:, i:n+1])
 
         if dtrace <= 0:
-            print "Warning: negative diagonal entry: ", diag
+            print("Warning: negative diagonal entry: ", diag)
 
         if dtrace <= precision:
             G = G[:,  :i] 

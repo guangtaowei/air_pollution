@@ -22,6 +22,10 @@ from dbn.tensorflow import SupervisedDBNRegression
 # path_CRBM = os.path.join(os.path.dirname(os.path.abspath(__file__)), "CRBM-DBN")
 # sys.path.append(path_CRBM)
 
+path_KCCA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PyKCCA")
+sys.path.append(path_KCCA)
+# from kcca import *
+
 logging.basicConfig(level=logging.INFO)
 
 # path_data = "data/data.xls"

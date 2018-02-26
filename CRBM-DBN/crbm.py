@@ -331,7 +331,7 @@ class CRBM(object):
         #print vis_mf[:,1:5]
         generated_series = np.empty((n_seq, n_samples, self.n_visible))
         for t in xrange(n_samples):
-            print "Generating frame %d" % t
+            print("Generating frame %d" % t)
             vis_mf, vis_sample = sample_fn()
             generated_series[:, t, :] = vis_mf
         return generated_series
@@ -440,7 +440,7 @@ def train_crbm(config,
             #print batch_index, this_cost
             mean_cost += [this_cost]
 
-        print 'Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost)
+        print('Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost))
         #mf,mf2 = crbm.propup(data_idx, hist_idx.ravel()) 
         #print(mf.shape.eval())
         # plt.subplot(212)

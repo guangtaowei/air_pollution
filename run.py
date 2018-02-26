@@ -19,9 +19,13 @@ path_DBN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "deep-belief
 sys.path.append(path_DBN)
 from dbn.tensorflow import SupervisedDBNRegression
 
+# path_CRBM = os.path.join(os.path.dirname(os.path.abspath(__file__)), "CRBM-DBN")
+# sys.path.append(path_CRBM)
+
 logging.basicConfig(level=logging.INFO)
 
-path_data = "data/data.xls"
+# path_data = "data/data.xls"
+path_data = "data/airdata.xlsx"
 path_out_txt = "out/out.txt"
 path_out_png = "out/out.png"
 

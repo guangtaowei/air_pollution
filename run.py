@@ -22,9 +22,11 @@ from dbn.tensorflow import SupervisedDBNRegression
 # path_CRBM = os.path.join(os.path.dirname(os.path.abspath(__file__)), "CRBM-DBN")
 # sys.path.append(path_CRBM)
 
-path_KCCA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PyKCCA")
-sys.path.append(path_KCCA)
+# path_KCCA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PyKCCA")
+# sys.path.append(path_KCCA)
 # from kcca import *
+
+from sklearn import svm
 
 logging.basicConfig(level=logging.INFO)
 
@@ -64,9 +66,21 @@ regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[100],
                                         n_epochs_rbm=20,
                                         n_iter_backprop=200,
                                         batch_size=16,
-                                        activation_function='relu',
+                                        activation_function='sigmoid',
                                         verbose=False)
-regressor_AdaBoost = AdaBoostRegressor()
+# regressor_AdaBoost = AdaBoostRegressor()
+regressor_AdaBoost = AdaBoostRegressor(SupervisedDBNRegression(hidden_layers_structure=[100],
+                                                               learning_rate_rbm=0.01,
+                                                               learning_rate=0.01,
+                                                               n_epochs_rbm=20,
+                                                               n_iter_backprop=200,
+                                                               batch_size=16,
+                                                               activation_function='sigmoid',
+                                                               verbose=False),
+                                       loss="square",
+                                       n_estimators=250,
+                                       learning_rate=50)
+regressor_SVM = svm.SVR()
 
 min_max_scaler = MinMaxScaler()
 
@@ -82,8 +96,10 @@ Target = pm25[step]
 correct = []
 predict_DBN = []
 predict_AdaBoost = []
+predict_SVM = []
 loss_total_DBN = 0.0
 loss_total_AdaBoost = 0.0
+loss_total_SVM = 0.0
 
 for i in range(step + 1, data_num):
 
@@ -106,10 +122,12 @@ for i in range(step + 1, data_num):
             tmp_test = train_data_last
 
         tmp_pred_DBN = regressor_DBN.predict(tmp_test)[0][0]
-        tmp_pred_AdaBoost = regressor_AdaBoost.predict(tmp_test)[0]
+        tmp_pred_AdaBoost = regressor_AdaBoost.predict(tmp_test)[0][0][0][0]
+        tmp_pred_SVM = regressor_SVM.predict(tmp_test)[0]
         logging.info("==========================================")
         logging.info("pred_DBN:%s", tmp_pred_DBN)
         logging.info("pred_AdaBoost:%s", tmp_pred_AdaBoost)
+        logging.info("pred_SVM:%s", tmp_pred_SVM)
         logging.info("correct:%s", pm25[i])
         logging.info("==========================================")
         with open(path_out_txt, 'a') as f:  # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
@@ -117,17 +135,22 @@ for i in range(step + 1, data_num):
             loss_total_DBN += loss_DBN
             loss_AdaBoost = math.sqrt(math.pow(tmp_pred_AdaBoost - pm25[i], 2)) / pm25[i]
             loss_total_AdaBoost += loss_AdaBoost
+            loss_SVM = math.sqrt(math.pow(tmp_pred_SVM - pm25[i], 2)) / pm25[i]
+            loss_total_SVM += loss_SVM
             f.write(
-                "pred_DBN:%f\tpred_AdaBoost:%f\tcorrect:%f\t\tloss_DBN:%f\tloss_AdaBoost:%f\t\tloss_avg_DBN:%f\tloss_avg_AdaBoost:%f\n" % (
-                    tmp_pred_DBN, tmp_pred_AdaBoost, pm25[i], loss_DBN, loss_AdaBoost,
-                    loss_total_DBN / (i - predict_start), loss_total_AdaBoost / (i - predict_start)))
+                "p_D:%f\tp_A:%f\tp_S:%f\tc:%f\t\tl_D:%f\tl_A:%f\tl_S:%f\t\tl_avg_D:%f\tl_avg_A:%f\tl_avg_S:%f\n" % (
+                    tmp_pred_DBN, tmp_pred_AdaBoost, tmp_pred_SVM, pm25[i], loss_DBN, loss_AdaBoost, loss_SVM,
+                    loss_total_DBN / (i - predict_start), loss_total_AdaBoost / (i - predict_start),
+                    loss_total_SVM / (i - predict_start)))
         predict_DBN.append(tmp_pred_DBN)
         predict_AdaBoost.append(tmp_pred_AdaBoost)
+        predict_SVM.append(tmp_pred_SVM)
         correct.append(pm25[i])
         x_range = range(i - predict_start)
         plt.clf()
         plt.plot(x_range, predict_DBN, marker='o', label="DBN")
         plt.plot(x_range, predict_AdaBoost, marker='o', label="AdaBoost")
+        plt.plot(x_range, predict_SVM, marker='o', label="SVM")
         plt.plot(x_range, correct, marker='o', label="correct")
         plt.legend(loc='best')
         plt.savefig(path_out_png)
@@ -142,6 +165,7 @@ for i in range(step + 1, data_num):
         logging.debug("tmp_data:%s", tmp_data.shape)
         regressor_DBN.fit(tmp_data, Target[i - train_deep:i, 0])
         regressor_AdaBoost.fit(tmp_data, Target[i - train_deep:i, 0])
+        regressor_SVM.fit(tmp_data, Target[i - train_deep:i, 0])
 
 logging.info(
     'Done.\nDBN:\tR-squared: %f\nMSE: %f' % (r2_score(correct, predict_DBN), mean_squared_error(correct, predict_DBN)))

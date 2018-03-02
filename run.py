@@ -44,21 +44,24 @@ temperature = table.col_values(8)[1:]
 temperature = np.array(temperature)
 wind = table.col_values(9)[1:]
 wind = np.array(wind)
-moisture = table.col_values(11)[1:]
-moisture = np.array(moisture)
 weather = table.col_values(10)[1:]
 weather = np.array(weather)
+moisture = table.col_values(11)[1:]
+moisture = np.array(moisture)
 
 use_min_max_scaler = True
-use_all_data = True
+use_all_data = False
+use_CCA_data = True
+use_deep = False
 step = 1
-train_deep = 50
-train_start = 50
-predict_start = 51
+train_deep = 120
+train_start = 121
+predict_start = 122
 
 assert step > 0
 assert train_deep >= step and train_start >= train_deep
 assert predict_start > train_start
+assert not (True == use_all_data and True == use_CCA_data)
 
 regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[100],
                                         learning_rate_rbm=0.01,
@@ -89,7 +92,10 @@ open(path_out_txt, 'w').close()
 if use_all_data:
     Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
 else:
-    Data = pm25[0:step]
+    if use_CCA_data:
+        Data = np.concatenate((pm25[0:step], temperature[0:step], moisture[0:step]), axis=0)
+    else:
+        Data = pm25[0:step]
 
 Target = pm25[step]
 
@@ -101,6 +107,8 @@ loss_total_DBN = 0.0
 loss_total_AdaBoost = 0.0
 loss_total_SVM = 0.0
 
+logging.debug("data_num:%s", data_num)
+
 for i in range(step + 1, data_num):
 
     if use_all_data:
@@ -108,7 +116,10 @@ for i in range(step + 1, data_num):
             (pm25[i - step:i], temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]),
             axis=0)
     else:
-        train_data_last = pm25[i - step:i]
+        if use_CCA_data:
+            train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], moisture[i - step:i]), axis=0)
+        else:
+            train_data_last = pm25[i - step:i]
     logging.debug("train_data_last:%s", train_data_last.shape)
     Data = np.row_stack((Data, train_data_last))
     Target = np.row_stack((Target, pm25[i]))
@@ -119,8 +130,11 @@ for i in range(step + 1, data_num):
             train_data_last = train_data_last.reshape((1, train_data_last.size))
             tmp_test = min_max_scaler.transform(train_data_last)
         else:
+            train_data_last = train_data_last.reshape((1, train_data_last.size))
             tmp_test = train_data_last
 
+        logging.debug("train_data_last:%s", train_data_last)
+        logging.debug("tmp_test:%s", tmp_test)
         tmp_pred_DBN = regressor_DBN.predict(tmp_test)[0][0]
         tmp_pred_AdaBoost = regressor_AdaBoost.predict(tmp_test)[0][0][0][0]
         tmp_pred_SVM = regressor_SVM.predict(tmp_test)[0]
@@ -130,7 +144,13 @@ for i in range(step + 1, data_num):
         logging.info("pred_SVM:%s", tmp_pred_SVM)
         logging.info("correct:%s", pm25[i])
         logging.info("==========================================")
-        with open(path_out_txt, 'a') as f:  # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
+
+        predict_DBN.append(tmp_pred_DBN)
+        predict_AdaBoost.append(tmp_pred_AdaBoost)
+        predict_SVM.append(tmp_pred_SVM)
+        correct.append(pm25[i])
+
+        with open(path_out_txt, 'a') as f:
             loss_DBN = math.sqrt(math.pow(tmp_pred_DBN - pm25[i], 2)) / pm25[i]
             loss_total_DBN += loss_DBN
             loss_AdaBoost = math.sqrt(math.pow(tmp_pred_AdaBoost - pm25[i], 2)) / pm25[i]
@@ -138,14 +158,13 @@ for i in range(step + 1, data_num):
             loss_SVM = math.sqrt(math.pow(tmp_pred_SVM - pm25[i], 2)) / pm25[i]
             loss_total_SVM += loss_SVM
             f.write(
-                "p_D:%f\tp_A:%f\tp_S:%f\tc:%f\t\tl_D:%f\tl_A:%f\tl_S:%f\t\tl_avg_D:%f\tl_avg_A:%f\tl_avg_S:%f\n" % (
+                "p_D:%f\tp_A:%f\tp_S:%f\tc:%f\t\tl_D:%f\tl_A:%f\tl_S:%f\t\tR2_D:%f\tR2_A:%f\tR2_S:%f\t\tl_avg_D:%f\tl_avg_A:%f\tl_avg_S:%f\n" % (
                     tmp_pred_DBN, tmp_pred_AdaBoost, tmp_pred_SVM, pm25[i], loss_DBN, loss_AdaBoost, loss_SVM,
-                    loss_total_DBN / (i - predict_start), loss_total_AdaBoost / (i - predict_start),
+                    r2_score(correct, predict_DBN), r2_score(correct, predict_AdaBoost),
+                    r2_score(correct, predict_SVM), loss_total_DBN / (i - predict_start),
+                    loss_total_AdaBoost / (i - predict_start),
                     loss_total_SVM / (i - predict_start)))
-        predict_DBN.append(tmp_pred_DBN)
-        predict_AdaBoost.append(tmp_pred_AdaBoost)
-        predict_SVM.append(tmp_pred_SVM)
-        correct.append(pm25[i])
+
         x_range = range(i - predict_start)
         plt.clf()
         plt.plot(x_range, predict_DBN, marker='o', label="DBN")
@@ -158,14 +177,25 @@ for i in range(step + 1, data_num):
     # training
     if i > train_start:
         if use_min_max_scaler:
-            tmp_data = min_max_scaler.fit_transform(Data[i - train_deep:i])
+            if use_deep:
+                tmp_data = min_max_scaler.fit_transform(Data[i - train_deep:i])
+            else:
+                tmp_data = min_max_scaler.fit_transform(Data)
         else:
-            tmp_data = Data[i - train_deep:i]
+            if use_deep:
+                tmp_data = Data[i - train_deep:i]
+            else:
+                tmp_data = Data
         logging.debug("Data:%s", Data.shape)
         logging.debug("tmp_data:%s", tmp_data.shape)
-        regressor_DBN.fit(tmp_data, Target[i - train_deep:i, 0])
-        regressor_AdaBoost.fit(tmp_data, Target[i - train_deep:i, 0])
-        regressor_SVM.fit(tmp_data, Target[i - train_deep:i, 0])
+        if use_deep:
+            regressor_DBN.fit(tmp_data, Target[i - train_deep:i, 0])
+            regressor_AdaBoost.fit(tmp_data, Target[i - train_deep:i, 0])
+            regressor_SVM.fit(tmp_data, Target[i - train_deep:i, 0])
+        else:
+            regressor_DBN.fit(tmp_data, Target[:, 0])
+            regressor_AdaBoost.fit(tmp_data, Target[:, 0])
+            regressor_SVM.fit(tmp_data, Target[:, 0])
 
 logging.info(
     'Done.\nDBN:\tR-squared: %f\nMSE: %f' % (r2_score(correct, predict_DBN), mean_squared_error(correct, predict_DBN)))

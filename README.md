@@ -2,13 +2,29 @@
 
 ![完整的图](pic/20180302_0.png)
 
-step=1，不使用deep，使用cca的完整图，可以看出
+use_min_max_scaler = True
+use_all_data = False
+use_CCA_data = True
+use_pm25_history = True
+use_deep = False
+step = 1
+train_deep = 120
+train_start = 121
+predict_start = 122的完整图，可以看出
 预测的值跟前一个实际值强相关，应该是过拟合了。
 
 
 ![完整的图](pic/20180302_1.png)
 
-step=1，不使用deep，使用cca，不使用PM2.5的历史数据的完整图，
+use_min_max_scaler = True
+use_all_data = False
+use_CCA_data = True
+use_pm25_history = False
+use_deep = False
+step = 1
+train_deep = 120
+train_start = 121
+predict_start = 122的完整图，
 可以看出去掉PM2.5历史数据之后，图像变得非常糟糕，
 可以说用其他的数据可以学习出PM2.5的变化趋势，
 但是具体的PM2.5的值，还是要靠PM2.5的历史数据才能推测出。

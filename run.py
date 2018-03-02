@@ -15,12 +15,9 @@ import logging
 import os
 import sys
 
-path_DBN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "deep-belief-network")
+path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
 sys.path.append(path_DBN)
 from dbn.tensorflow import SupervisedDBNRegression
-
-# path_CRBM = os.path.join(os.path.dirname(os.path.abspath(__file__)), "CRBM-DBN")
-# sys.path.append(path_CRBM)
 
 from sklearn import svm
 

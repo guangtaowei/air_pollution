@@ -48,6 +48,7 @@ moisture = np.array(moisture)
 use_min_max_scaler = True
 use_all_data = False
 use_CCA_data = True
+use_pm25_history = False
 use_deep = False
 step = 1
 train_deep = 120
@@ -57,7 +58,8 @@ predict_start = 122
 assert step > 0
 assert train_deep >= step and train_start >= train_deep
 assert predict_start > train_start
-assert not (True == use_all_data and True == use_CCA_data)
+assert not (use_all_data and use_CCA_data)
+assert (not use_pm25_history) or (use_all_data and use_pm25_history) or (use_CCA_data and use_pm25_history)
 
 regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[100],
                                         learning_rate_rbm=0.01,
@@ -86,10 +88,17 @@ min_max_scaler = MinMaxScaler()
 open(path_out_txt, 'w').close()
 
 if use_all_data:
-    Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
+    if use_pm25_history:
+        Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]),
+                              axis=0)
+    else:
+        Data = np.concatenate((temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
 else:
     if use_CCA_data:
-        Data = np.concatenate((pm25[0:step], temperature[0:step], moisture[0:step]), axis=0)
+        if use_pm25_history:
+            Data = np.concatenate((pm25[0:step], temperature[0:step], moisture[0:step]), axis=0)
+        else:
+            Data = np.concatenate((temperature[0:step], moisture[0:step]), axis=0)
     else:
         Data = pm25[0:step]
 
@@ -108,12 +117,19 @@ logging.debug("data_num:%s", data_num)
 for i in range(step + 1, data_num):
 
     if use_all_data:
-        train_data_last = np.concatenate(
-            (pm25[i - step:i], temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]),
-            axis=0)
+        if use_pm25_history:
+            train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], wind[i - step:i],
+                                              weather[i - step:i], moisture[i - step:i]), axis=0)
+        else:
+            train_data_last = np.concatenate(
+                (temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]), axis=0)
     else:
         if use_CCA_data:
-            train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], moisture[i - step:i]), axis=0)
+            if use_pm25_history:
+                train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], moisture[i - step:i]),
+                                                 axis=0)
+            else:
+                train_data_last = np.concatenate((temperature[i - step:i], moisture[i - step:i]), axis=0)
         else:
             train_data_last = pm25[i - step:i]
     logging.debug("train_data_last:%s", train_data_last.shape)

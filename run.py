@@ -47,8 +47,8 @@ pressure = np.array(table.col_values(12)[1:])
 precipitation = np.array(table.col_values(13)[1:])
 
 use_min_max_scaler = True
-use_all_data = True
-use_CCA_data = False
+use_all_data = False
+use_CCA_data = True
 use_pm25_history = True
 use_deep = False
 step = 1
@@ -100,9 +100,12 @@ if use_all_data:
 else:
     if use_CCA_data:
         if use_pm25_history:
-            Data = np.concatenate((pm25[0:step], pm10[0:step], co[0:step]), axis=0)
+            Data = np.concatenate(
+                (pm25[0:step], pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
+                axis=0)
         else:
-            Data = np.concatenate((pm10[0:step], co[0:step]), axis=0)
+            Data = np.concatenate((pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
+                                  axis=0)
     else:
         Data = pm25[0:step]
 
@@ -135,9 +138,14 @@ for i in range(step + 1, data_num):
     else:
         if use_CCA_data:
             if use_pm25_history:
-                train_data_last = np.concatenate((pm25[i - step:i], pm10[i - step:i], co[i - step:i]), axis=0)
+                train_data_last = np.concatenate(
+                    (pm25[i - step:i], pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
+                     pressure[i - step:i]),
+                    axis=0)
             else:
-                train_data_last = np.concatenate((pm10[i - step:i], co[i - step:i]), axis=0)
+                train_data_last = np.concatenate(
+                    (pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
+                     pressure[i - step:i]), axis=0)
         else:
             train_data_last = pm25[i - step:i]
     logging.debug("train_data_last:%s", train_data_last.shape)

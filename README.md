@@ -1,5 +1,18 @@
 # air_pollution 
  
+![完整的图](pic/20180303_3.png)   
+这是使用cca算出来的最相关的pm10，co，temperature，moisture， pressure做出来的图，
+use_min_max_scaler = True
+use_all_data = False
+use_CCA_data = True
+use_pm25_history = True
+use_deep = False
+step = 1
+train_deep = 120
+train_start = 121
+predict_start = 122，MSE变为了101和123，完全没有使用全部数据的好。  
+ 
+ 
 ![完整的图](pic/20180303_1.png)  ![完整的图](pic/20180303_2.png)   
 这是使用全部数据做出来的图，
 use_min_max_scaler = True

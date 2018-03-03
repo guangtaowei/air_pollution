@@ -31,21 +31,25 @@ path_out_png = "out/out.png"
 data = xlrd.open_workbook(path_data)
 table = data.sheet_by_index(0)
 data_num = table.nrows - 1
-pm25 = table.col_values(2)[1:]
-pm25 = np.array(pm25)
-temperature = table.col_values(8)[1:]
-temperature = np.array(temperature)
-wind = table.col_values(9)[1:]
-wind = np.array(wind)
-weather = table.col_values(10)[1:]
-weather = np.array(weather)
-moisture = table.col_values(11)[1:]
-moisture = np.array(moisture)
+
+hour = np.array(table.col_values(1)[1:])
+pm25 = np.array(table.col_values(2)[1:])
+o3 = np.array(table.col_values(3)[1:])
+pm10 = np.array(table.col_values(4)[1:])
+so2 = np.array(table.col_values(5)[1:])
+no2 = np.array(table.col_values(6)[1:])
+co = np.array(table.col_values(7)[1:])
+temperature = np.array(table.col_values(8)[1:])
+wind = np.array(table.col_values(9)[1:])
+weather = np.array(table.col_values(10)[1:])
+moisture = np.array(table.col_values(11)[1:])
+pressure = np.array(table.col_values(12)[1:])
+precipitation = np.array(table.col_values(13)[1:])
 
 use_min_max_scaler = True
-use_all_data = False
+use_all_data = False  # have not completed
 use_CCA_data = True
-use_pm25_history = False
+use_pm25_history = True
 use_deep = False
 step = 1
 train_deep = 120
@@ -93,9 +97,9 @@ if use_all_data:
 else:
     if use_CCA_data:
         if use_pm25_history:
-            Data = np.concatenate((pm25[0:step], temperature[0:step], moisture[0:step]), axis=0)
+            Data = np.concatenate((pm25[0:step], pm10[0:step], co[0:step]), axis=0)
         else:
-            Data = np.concatenate((temperature[0:step], moisture[0:step]), axis=0)
+            Data = np.concatenate((pm10[0:step], co[0:step]), axis=0)
     else:
         Data = pm25[0:step]
 
@@ -123,10 +127,9 @@ for i in range(step + 1, data_num):
     else:
         if use_CCA_data:
             if use_pm25_history:
-                train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], moisture[i - step:i]),
-                                                 axis=0)
+                train_data_last = np.concatenate((pm25[i - step:i], pm10[i - step:i], co[i - step:i]), axis=0)
             else:
-                train_data_last = np.concatenate((temperature[i - step:i], moisture[i - step:i]), axis=0)
+                train_data_last = np.concatenate((pm10[i - step:i], co[i - step:i]), axis=0)
         else:
             train_data_last = pm25[i - step:i]
     logging.debug("train_data_last:%s", train_data_last.shape)

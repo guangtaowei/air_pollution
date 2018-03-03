@@ -47,8 +47,8 @@ pressure = np.array(table.col_values(12)[1:])
 precipitation = np.array(table.col_values(13)[1:])
 
 use_min_max_scaler = True
-use_all_data = False  # have not completed
-use_CCA_data = True
+use_all_data = True
+use_CCA_data = False
 use_pm25_history = True
 use_deep = False
 step = 1
@@ -90,10 +90,13 @@ open(path_out_txt, 'w').close()
 
 if use_all_data:
     if use_pm25_history:
-        Data = np.concatenate((pm25[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]),
-                              axis=0)
+        Data = np.concatenate((hour[0:step], pm25[0:step], o3[0:step], pm10[0:step], so2[0:step], no2[0:step],
+                               co[0:step], temperature[0:step], wind[0:step], weather[0:step], moisture[0:step],
+                               pressure[0:step], precipitation[0:step]), axis=0)
     else:
-        Data = np.concatenate((temperature[0:step], wind[0:step], weather[0:step], moisture[0:step]), axis=0)
+        Data = np.concatenate((hour[0:step], o3[0:step], pm10[0:step], so2[0:step], no2[0:step], co[0:step],
+                               temperature[0:step], wind[0:step], weather[0:step], moisture[0:step], pressure[0:step],
+                               precipitation[0:step]), axis=0)
 else:
     if use_CCA_data:
         if use_pm25_history:
@@ -119,11 +122,16 @@ for i in range(step + 1, data_num):
 
     if use_all_data:
         if use_pm25_history:
-            train_data_last = np.concatenate((pm25[i - step:i], temperature[i - step:i], wind[i - step:i],
-                                              weather[i - step:i], moisture[i - step:i]), axis=0)
+            train_data_last = np.concatenate((hour[i - step:i], pm25[i - step:i], o3[i - step:i], pm10[i - step:i],
+                                              so2[i - step:i], no2[i - step:i], co[i - step:i],
+                                              temperature[i - step:i], wind[i - step:i], weather[i - step:i],
+                                              moisture[i - step:i], pressure[i - step:i], precipitation[i - step:i]),
+                                             axis=0)
         else:
-            train_data_last = np.concatenate(
-                (temperature[i - step:i], wind[i - step:i], weather[i - step:i], moisture[i - step:i]), axis=0)
+            train_data_last = np.concatenate((hour[i - step:i], o3[i - step:i], pm10[i - step:i], so2[i - step:i],
+                                              no2[i - step:i], co[i - step:i], temperature[i - step:i],
+                                              wind[i - step:i], weather[i - step:i], moisture[i - step:i],
+                                              pressure[i - step:i], precipitation[i - step:i]), axis=0)
     else:
         if use_CCA_data:
             if use_pm25_history:

@@ -46,12 +46,15 @@ moisture = np.array(table.col_values(11)[1:])
 pressure = np.array(table.col_values(12)[1:])
 precipitation = np.array(table.col_values(13)[1:])
 
+data.release_resources()
+del data
+
 use_min_max_scaler = True
-use_all_data = False
+use_all_data = True
 use_CCA_data = False
 use_pm25_history = True
-use_drop_least_importance = True
-use_deep = False
+use_drop_least_importance = False
+use_deep = True
 step = 1
 train_deep = 120
 train_start = 121
@@ -62,7 +65,7 @@ assert train_deep >= step and train_start >= train_deep
 assert predict_start > train_start
 assert not (use_all_data and use_CCA_data)
 assert (not use_pm25_history) or (use_all_data and use_pm25_history) or (use_CCA_data and use_pm25_history) or (
-            use_drop_least_importance and use_pm25_history)
+        use_drop_least_importance and use_pm25_history)
 assert (not use_drop_least_importance) or ((not use_all_data) and (not use_CCA_data) and use_drop_least_importance)
 
 regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[100],

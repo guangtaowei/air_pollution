@@ -1,5 +1,8 @@
 # air_pollution 
  
+去掉deep限制，MSE就变成91，98了。   
+ 
+ 
 ![完整的图](pic/20180304_0.png)   
 这是去掉最不相关的的weather、wind做出来的图，
 use_min_max_scaler = True

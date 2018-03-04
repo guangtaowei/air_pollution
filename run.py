@@ -48,8 +48,9 @@ precipitation = np.array(table.col_values(13)[1:])
 
 use_min_max_scaler = True
 use_all_data = False
-use_CCA_data = True
+use_CCA_data = False
 use_pm25_history = True
+use_drop_least_importance = True
 use_deep = False
 step = 1
 train_deep = 120
@@ -60,7 +61,9 @@ assert step > 0
 assert train_deep >= step and train_start >= train_deep
 assert predict_start > train_start
 assert not (use_all_data and use_CCA_data)
-assert (not use_pm25_history) or (use_all_data and use_pm25_history) or (use_CCA_data and use_pm25_history)
+assert (not use_pm25_history) or (use_all_data and use_pm25_history) or (use_CCA_data and use_pm25_history) or (
+            use_drop_least_importance and use_pm25_history)
+assert (not use_drop_least_importance) or ((not use_all_data) and (not use_CCA_data) and use_drop_least_importance)
 
 regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[100],
                                         learning_rate_rbm=0.01,
@@ -97,17 +100,24 @@ if use_all_data:
         Data = np.concatenate((hour[0:step], o3[0:step], pm10[0:step], so2[0:step], no2[0:step], co[0:step],
                                temperature[0:step], wind[0:step], weather[0:step], moisture[0:step], pressure[0:step],
                                precipitation[0:step]), axis=0)
-else:
-    if use_CCA_data:
-        if use_pm25_history:
-            Data = np.concatenate(
-                (pm25[0:step], pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
-                axis=0)
-        else:
-            Data = np.concatenate((pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
-                                  axis=0)
+elif use_CCA_data:
+    if use_pm25_history:
+        Data = np.concatenate(
+            (pm25[0:step], pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
+            axis=0)
     else:
-        Data = pm25[0:step]
+        Data = np.concatenate((pm10[0:step], co[0:step], temperature[0:step], moisture[0:step], pressure[0:step]),
+                              axis=0)
+elif use_drop_least_importance:
+    if use_pm25_history:
+        Data = np.concatenate((hour[0:step], pm25[0:step], o3[0:step], pm10[0:step], so2[0:step], no2[0:step],
+                               co[0:step], temperature[0:step], moisture[0:step], pressure[0:step],
+                               precipitation[0:step]), axis=0)
+    else:
+        Data = np.concatenate((hour[0:step], o3[0:step], pm10[0:step], so2[0:step], no2[0:step], co[0:step],
+                               temperature[0:step], moisture[0:step], pressure[0:step], precipitation[0:step]), axis=0)
+else:
+    Data = pm25[0:step]
 
 Target = pm25[step]
 
@@ -135,19 +145,30 @@ for i in range(step + 1, data_num):
                                               no2[i - step:i], co[i - step:i], temperature[i - step:i],
                                               wind[i - step:i], weather[i - step:i], moisture[i - step:i],
                                               pressure[i - step:i], precipitation[i - step:i]), axis=0)
-    else:
-        if use_CCA_data:
-            if use_pm25_history:
-                train_data_last = np.concatenate(
-                    (pm25[i - step:i], pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
-                     pressure[i - step:i]),
-                    axis=0)
-            else:
-                train_data_last = np.concatenate(
-                    (pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
-                     pressure[i - step:i]), axis=0)
+    elif use_CCA_data:
+        if use_pm25_history:
+            train_data_last = np.concatenate(
+                (pm25[i - step:i], pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
+                 pressure[i - step:i]),
+                axis=0)
         else:
-            train_data_last = pm25[i - step:i]
+            train_data_last = np.concatenate(
+                (pm10[i - step:i], co[i - step:i], temperature[i - step:i], moisture[i - step:i],
+                 pressure[i - step:i]), axis=0)
+    elif use_drop_least_importance:
+        if use_pm25_history:
+            train_data_last = np.concatenate((hour[i - step:i], pm25[i - step:i], o3[i - step:i], pm10[i - step:i],
+                                              so2[i - step:i], no2[i - step:i], co[i - step:i], temperature[i - step:i],
+                                              moisture[i - step:i], pressure[i - step:i], precipitation[i - step:i]),
+                                             axis=0)
+        else:
+            train_data_last = np.concatenate((hour[i - step:i], o3[i - step:i], pm10[i - step:i], so2[i - step:i],
+                                              no2[i - step:i], co[i - step:i], temperature[i - step:i],
+                                              moisture[i - step:i], pressure[i - step:i], precipitation[i - step:i]),
+                                             axis=0)
+    else:
+        train_data_last = pm25[i - step:i]
+
     logging.debug("train_data_last:%s", train_data_last.shape)
     Data = np.row_stack((Data, train_data_last))
     Target = np.row_stack((Target, pm25[i]))

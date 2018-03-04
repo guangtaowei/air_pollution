@@ -46,15 +46,15 @@ moisture = np.array(table.col_values(11)[1:])
 pressure = np.array(table.col_values(12)[1:])
 precipitation = np.array(table.col_values(13)[1:])
 
-data.release_resources()
-del data
+# data.release_resources()
+# del data
 
 use_min_max_scaler = True
 use_all_data = True
 use_CCA_data = False
 use_pm25_history = True
 use_drop_least_importance = False
-use_deep = True
+use_deep = False
 step = 1
 train_deep = 120
 train_start = 121

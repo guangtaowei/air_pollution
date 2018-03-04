@@ -1,4 +1,6 @@
-# air_pollution 
+# air_pollution  
+ 
+又做了一次不带deep限制的全部数据，MSE竟然变成72.39和86.17了。怀疑是波动，但仍需查明原因。  
  
 去掉deep限制，MSE就变成91，98了。   
  

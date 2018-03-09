@@ -256,6 +256,60 @@ DBN:	R-squared: 0.762488
 MSE: 71.845210
 INFO:root:AdaBoost:	R-squared: 0.740108
 MSE: 78.601664
+
+10. 用除了气象的全部的特征数据画了一张图，能够看到各类数据的变化趋势，方便以后做CCA的相关性分析。从图中可以发现，pm10、no2和PM2.5的确是强相关的。
+
+![完整的图](pic/图片14.png)  
+
+![完整的图](pic/图片15.png)  
+
+![完整的图](pic/图片16.png)  
+
+11. 用312个数据出的图，用了三天时间。
+
+![完整的图](pic/图片17.png)  
+
+use_min_max_scaler = True
+use_all_data = True
+use_CCA_data = False
+use_pm25_history = True
+use_drop_least_importance = False
+use_deep = False
+step = 1
+'''train_deep = 120
+train_start = 121
+predict_start = 122'''
+train_deep = 250
+train_start = 251
+predict_start = 252
+
+l_avg_D:0.139119    l_avg_A:0.206861   l_avg_S:0.356926
+
+0.82的R2
+
+12.用tensorflow里的技巧来对dbn调参，分段调整了学习率，发现不收敛,还需继续调参
+
+![完整的图](pic/图片18.png)  
+
+use_min_max_scaler = True
+use_all_data = True
+use_CCA_data = False
+use_pm25_history = True
+use_drop_least_importance = False
+use_deep = False
+step = 1
+'''train_deep = 120
+train_start = 121
+predict_start = 122'''
+train_deep = 250
+train_start = 251
+predict_start = 252
+
+l_avg_D:0.139119    l_avg_A:0.206861   l_avg_S:0.356926
+![完整的图](pic/图片19.png)  
+
+13. https://colab.research.google.com/notebooks/mlcc/synthetic_features_and_outliers.ipynb?hl=zh-cn
+访问需要翻墙，这个可以把离群的值删掉，可以提高正确率。
 * 啦啦 
 
 

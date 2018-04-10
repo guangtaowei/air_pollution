@@ -12,12 +12,23 @@ import os
 import sys
 import pandas as pd
 from sklearn import svm
+# from queue import Queue
+from threading import Thread
+from multiprocessing import Process, Queue
+import os
+import datetime
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# 默认为0：输出所有log信息
+# 设置为1：进一步屏蔽INFO信息
+# 设置为2：进一步屏蔽WARNING信息
+# 设置为3：进一步屏蔽ERROR信息
 
 np.random.seed(1337)  # for reproducibility
 logging.basicConfig(level=logging.INFO)
 
 
-def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, x_test):
+def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, x_test, message_queue):
     path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
     sys.path.append(path_DBN)
     from dbn.tensorflow import SupervisedDBNRegression
@@ -26,7 +37,8 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, 
                                             batch_size=batch_size, verbose=False)
     regressor_DBN.fit(x_train, y_trian)
     pred = regressor_DBN.predict(x_test)
-    return pred
+    message_queue.put(pred)
+    return
 
 
 def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, label, path_out_png, pred_num, train_deep):
@@ -35,20 +47,28 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
     print("Training model...")
     print("RMSE (on training data):")
     root_mean_squared_errors = []
+    message_queue = Queue()
+
     for deep in range(1, train_deep + 1):
         RMSE_total = 0
+
         for i in range(0, pred_num):
+            starttime = datetime.datetime.now()
+
             x_train = np.array(X_train[X_train.shape[0] - i - deep:X_train.shape[0] - i])
             y_trian = np.array(Y_train[Y_train.shape[0] - i - deep:Y_train.shape[0] - i])
             x_test = np.array(X_test)
             y_test = np.array(Y_test)
 
-            predictions = train_model(learning_rate_rbm=learning_rate_rbm, learning_rate=learning_rate,
-                                      batch_size=batch_size, x_train=x_train,
-                                      y_trian=y_trian, x_test=x_test)
+            _process = Process(target=train_model, args=(
+                learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, x_test, message_queue))
+            _process.start()
+            _process.join()
+            predictions = message_queue.get()
 
             root_mean_squared_error = math.sqrt(mean_squared_error(y_test, predictions))
-            print("\t\ti:\t", root_mean_squared_error)
+            endtime = datetime.datetime.now()
+            print("\t\ti:\t", root_mean_squared_error, "\t\tusing seconds:\t", (endtime - starttime).seconds)
             RMSE_total += root_mean_squared_error
 
         RMSE_avg = RMSE_total / pred_num
@@ -68,7 +88,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
 
 
 path_data = "data/airdata.csv"
-path_out_png = "out/out_test_TrianDeep.png"
+path_out_png = "out/out_test_1.png"
 
 data = pd.read_csv(path_data, sep=",")
 

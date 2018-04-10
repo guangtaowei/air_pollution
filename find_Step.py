@@ -41,15 +41,26 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, 
     return
 
 
-def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, label, path_out_png, pred_num, train_deep):
-    X_train, X_test, Y_train, Y_test = train_test_split(feature, label, test_size=0.2, shuffle=False)
+def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, label, path_out_png, pred_num, train_deep,
+                     step):
+    # X_train, X_test, Y_train, Y_test = train_test_split(feature, label, test_size=0.2, shuffle=False)
 
     print("Training model...")
     print("RMSE (on training data):")
     root_mean_squared_errors = []
     message_queue = Queue()
 
-    for deep in range(1, train_deep + 1):
+    # for deep in range(1, train_deep + 1):
+    for _step in range(1, step + 1):
+        Feature = np.array([])
+        for _start in range(_step, feature.shape[0] + 1):
+            Feature=np.append(Feature, feature[_start - _step:_start].values)
+        Lable=label[_step-1:]
+        Feature = Feature.reshape(Lable.shape[0],math.floor(Feature.size/Lable.shape[0]))
+
+        X_train, X_test, Y_train, Y_test = train_test_split(Feature, Lable, test_size=0.2, shuffle=False)
+
+        deep = train_deep
         RMSE_total = 0
 
         for i in range(0, pred_num):
@@ -73,13 +84,14 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
 
         RMSE_avg = RMSE_total / pred_num
         root_mean_squared_errors.append(RMSE_avg)
-        print("train_deep:", deep, "\tRMSE_avg:", RMSE_avg)
+        #print("train_deep:", deep, "\tRMSE_avg:", RMSE_avg)
+        print("step:", _step, "\tRMSE_avg:", RMSE_avg)
 
         # Output a graph of loss metrics over periods.
         # plt.subplot(1, 2, 2)
         plt.ylabel('RMSE')
-        plt.xlabel('train_deep')
-        plt.title("Root Mean Squared Error vs. Train Deep")
+        plt.xlabel('Step')
+        plt.title("Root Mean Squared Error vs. Step")
         plt.tight_layout()
         plt.plot(root_mean_squared_errors)
         plt.savefig(path_out_png)
@@ -88,7 +100,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
 
 
 path_data = "data/airdata.csv"
-path_out_png = "out/out_test_1.png"
+path_out_png = "out/out_test_Step.png"
 
 data = pd.read_csv(path_data, sep=",")
 
@@ -97,14 +109,13 @@ target = target.drop([0])
 
 data = data.drop([data.shape[0] - 1])
 data = data.drop(["date"], axis=1)
-# print(data["date"])
-
 
 learning_rate_rbm = 0.01
 learning_rate = 0.00001
 batch_size = 1
 pred_num = 3
-train_deep = 200
+train_deep = 10
+step = 200
 
 train_model_func(learning_rate_rbm=learning_rate_rbm, learning_rate=learning_rate, batch_size=batch_size, feature=data,
-                 label=target, path_out_png=path_out_png, pred_num=pred_num, train_deep=train_deep)
+                 label=target, path_out_png=path_out_png, pred_num=pred_num, train_deep=train_deep, step=step)

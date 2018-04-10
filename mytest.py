@@ -13,15 +13,17 @@ import sys
 import pandas as pd
 from sklearn import svm
 
-path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
-sys.path.append(path_DBN)
-from dbn.tensorflow import SupervisedDBNRegression
+
 
 np.random.seed(1337)  # for reproducibility
 logging.basicConfig(level=logging.INFO)
 
 
 def train_model(learning_rate, periods, batch_size, feature, label, path_out_png):
+    path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
+    sys.path.append(path_DBN)
+    from dbn.tensorflow import SupervisedDBNRegression
+
     X_train, X_test, Y_train, Y_test = train_test_split(feature, label, test_size=0.2, shuffle=False)
 
     train_steps_per_period = X_train.shape[0] // periods  # floor
@@ -95,5 +97,10 @@ data = data.drop(["date"], axis=1)
 learning_rate = 0.00001
 batch_size = 1
 
-train_model(learning_rate=learning_rate, periods=10, batch_size=batch_size, feature=data, label=target,
-            path_out_png=path_out_png)
+#train_model(learning_rate=learning_rate, periods=10, batch_size=batch_size, feature=data, label=target,
+ #           path_out_png=path_out_png)
+
+print(data.size)
+print(data)
+print(data.shape)
+print(math.floor(data.shape[0]/2))

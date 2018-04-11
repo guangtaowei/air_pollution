@@ -312,6 +312,128 @@ l_avg_D:0.139119    l_avg_A:0.206861   l_avg_S:0.356926
 访问需要翻墙，这个可以把离群的值删掉，可以提高正确率。
 * 啦啦 
 
+4.11
+
+
+14. mytest.py做了多进程运行tensorflow，解决了多次运行后异常变慢的问题。
+15. 调参，train_depp，train=10的时候就拟合了
+ssh://zsd@192.168.31.240:22/home/zsd/桌面/air_pollution/venv/bin/python -u /home/zsd/桌面/air_pollution/mytest_2.py
+Training model...
+RMSE (on training data):
+    i:   47.81594191782798     using seconds:   5
+    i:   47.17126961688913     using seconds:   5
+    i:   46.99601897446311     using seconds:   5
+train_deep: 1   RMSE_avg: 47.32774350306007
+    i:   40.120101707620954     using seconds:   5
+    i:   40.034922546257775     using seconds:   5
+    i:   41.712566864432695     using seconds:   5
+train_deep: 2   RMSE_avg: 40.62253037277048
+    i:   35.98261209879354     using seconds:   6
+    i:   35.60171477920341     using seconds:   6
+    i:   36.562348635729435     using seconds:   6
+train_deep: 3   RMSE_avg: 36.04889183790879
+    i:   30.455651746946348     using seconds:   7
+    i:   31.414330932711742     using seconds:   7
+    i:   29.64132604661265     using seconds:   7
+train_deep: 4   RMSE_avg: 30.50376957542358
+    i:   26.257555805438443     using seconds:   7
+    i:   26.219237271767405     using seconds:   7
+    i:   25.503204237005654     using seconds:   7
+train_deep: 5   RMSE_avg: 25.9933324380705
+    i:   24.314031374289733     using seconds:   8
+    i:   24.421185356565744     using seconds:   8
+    i:   23.168946442512315     using seconds:   8
+train_deep: 6   RMSE_avg: 23.968054391122596
+    i:   22.263611075016836     using seconds:   9
+    i:   22.035477165457333     using seconds:   9
+    i:   20.836277723167772     using seconds:   9
+train_deep: 7   RMSE_avg: 21.711788654547316
+    i:   21.16787104883965     using seconds:   10
+    i:   20.959176246450472     using seconds:   10
+    i:   20.44655609493384     using seconds:   10
+train_deep: 8   RMSE_avg: 20.85786779674132
+    i:   20.25247284435182     using seconds:   11
+    i:   20.264593233771237     using seconds:   11
+    i:   20.247449541202204     using seconds:   11
+train_deep: 9   RMSE_avg: 20.25483853977509
+    i:   20.263345468726826     using seconds:   12
+    i:   20.267750723745987     using seconds:   11
+    i:   20.256103052265594     using seconds:   11
+train_deep: 10   RMSE_avg: 20.262399748246136
+    i:   20.703004721926156     using seconds:   12
+    i:   20.482359057561492     using seconds:   12
+    i:   20.31160982683913     using seconds:   12
+train_deep: 11   RMSE_avg: 20.498991202108925
+    i:   20.299256348265203     using seconds:   13
+    i:   20.47294818949193     using seconds:   13
+    i:   20.51830454065888     using seconds:   13
+train_deep: 12   RMSE_avg: 20.43016969280534
+    i:   20.55411594222175     using seconds:   14
+    i:   20.828331243946018     using seconds:   14
+    i:   20.44778390819282     using seconds:   14
+train_deep: 13   RMSE_avg: 20.610077031453528
+    i:   21.055888206896594     using seconds:   15
+    i:   20.815449825093342     using seconds:   15
+    i:   20.493938141127078     using seconds:   15
+train_deep: 14   RMSE_avg: 20.788425391039002
+    i:   21.06115166627951     using seconds:   16
+    i:   20.724454034834846     using seconds:   16
+    i:   20.38994665861135     using seconds:   16
+train_deep: 15   RMSE_avg: 20.72518411990857
+    i:   20.77557660820656     using seconds:   17
+    i:   20.630565084809827     using seconds:   17
+    i:   20.427976124402562     using seconds:   17
+train_deep: 16   RMSE_avg: 20.611372605806316
+    i:   20.77358792344959     using seconds:   18
+    i:   20.576499818853325     using seconds:   18
+    i:   20.335229131442773     using seconds:   18
+train_deep: 17   RMSE_avg: 20.561772291248563
+    i:   20.64898620842552     using seconds:   19
+    i:   20.466134905822088     using seconds:   19
+    i:   20.382070349776097     using seconds:   19
+train_deep: 18   RMSE_avg: 20.499063821341235
+    i:   20.57250347374354     using seconds:   20
+    i:   20.43361504084675     using seconds:   20
+    i:   20.303632298737227     using seconds:   20
+train_deep: 19   RMSE_avg: 20.436583604442507
+    i:   20.661117040272792     using seconds:   21
+    i:   20.35185690329263     using seconds:   21
+    i:   20.257124867176014     using seconds:   21
+train_deep: 20   RMSE_avg: 20.423366270247147
+    i:   20.500466766715782     using seconds:   22
+    i:   20.30194805471769     using seconds:   22
+    i:   20.24805176810993     using seconds:   22
+train_deep: 21   RMSE_avg: 20.3501555298478
+    i:   20.378324735466432     using seconds:   23
+    i:   20.27990331024026     using seconds:   23
+    i:   20.265804537754754     using seconds:   23
+train_deep: 22   RMSE_avg: 20.308010861153814
+    i:   20.301247807203644     using seconds:   24
+    i:   20.2666770765018     using seconds:   24
+    i:   20.25099219634584     using seconds:   24
+train_deep: 23   RMSE_avg: 20.272972360017096
+    i:   20.33559596609681     using seconds:   25
+    i:   20.2621804748032     using seconds:   25
+    i:   20.254888084140234     using seconds:   25
+train_deep: 24   RMSE_avg: 20.284221508346747
+    i:   20.310307353166042     using seconds:   26
+    i:   20.247742551551863     using seconds:   26
+    i:   20.29676654745506     using seconds:   26
+train_deep: 25   RMSE_avg: 20.28493881739099
+    i:   20.253641498580993     using seconds:   27
+    
+![完整的图](pic/图片20.png)  
+
+16. 调整step，step=99的时候拟合了，完成了最佳step的搜寻
+    
+![完整的图](pic/图片21.png)  
+Step中合并数据代码
+
+![完整的图](pic/图片22.png)
+ 
+17. 用step=100,train_step=10,跑全部数据
+
+![完整的图](pic/图片23.png) 
 
 > 我是引用 
 

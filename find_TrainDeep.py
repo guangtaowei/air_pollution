@@ -101,8 +101,8 @@ data = data.drop(["date"], axis=1)
 
 
 learning_rate_rbm = 0.01
-learning_rate = 0.00001
-batch_size = 1
+learning_rate = 0.01
+batch_size = 16
 pred_num = 3
 train_deep = 200
 

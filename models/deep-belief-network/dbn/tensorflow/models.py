@@ -275,6 +275,7 @@ class UnsupervisedDBN(BaseUnsupervisedDBN, BaseTensorFlowModel):
 
 class TensorFlowAbstractSupervisedDBN(BaseAbstractSupervisedDBN, BaseTensorFlowModel):
     __metaclass__ = ABCMeta
+    is_build_model = False
 
     def __init__(self, **kwargs):
         super(TensorFlowAbstractSupervisedDBN, self).__init__(UnsupervisedDBN, **kwargs)
@@ -370,8 +371,10 @@ class TensorFlowAbstractSupervisedDBN(BaseAbstractSupervisedDBN, BaseTensorFlowM
         if self.num_classes == 1:
             _labels = np.expand_dims(_labels, -1)
 
-        self._build_model()
-        sess.run(tf.variables_initializer([self.W, self.b]))
+        if not self.is_build_model:
+            self._build_model()
+            sess.run(tf.variables_initializer([self.W, self.b]))
+            self.is_build_model = True
 
         labels = self._transform_labels_to_network_format(_labels)
 

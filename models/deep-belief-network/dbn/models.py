@@ -242,13 +242,9 @@ class UnsupervisedDBN(BaseEstimator, TransformerMixin, BaseModel):
         self.rbm_layers = None
         self.verbose = verbose
         self.rbm_class = BinaryRBM
+        self.rbm_layers_is_init=False
 
-    def fit(self, X, y=None):
-        """
-        Fits a model given data.
-        :param X: array-like, shape = (n_samples, n_features)
-        :return:
-        """
+    def rbm_layers_init(self):
         # Initialize rbm layers
         self.rbm_layers = list()
         for n_hidden_units in self.hidden_layers_structure:
@@ -261,6 +257,16 @@ class UnsupervisedDBN(BaseEstimator, TransformerMixin, BaseModel):
                                  batch_size=self.batch_size,
                                  verbose=self.verbose)
             self.rbm_layers.append(rbm)
+        self.rbm_layers_is_init = True
+
+    def fit(self, X, y=None):
+        """
+        Fits a model given data.
+        :param X: array-like, shape = (n_samples, n_features)
+        :return:
+        """
+        if not self.rbm_layers_is_init:
+            self.rbm_layers_init()
 
         # Fit RBM
         if self.verbose:

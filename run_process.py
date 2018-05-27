@@ -28,7 +28,7 @@ np.random.seed(1337)  # for reproducibility
 logging.basicConfig(level=logging.INFO)
 
 
-def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, x_test, message_queue):
+def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, x_test, message_queue):
     path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
     sys.path.append(path_DBN)
     from dbn.tensorflow import SupervisedDBNRegression
@@ -41,7 +41,7 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_trian, 
                                             batch_size=batch_size,
                                             activation_function='sigmoid',
                                             verbose=False)
-    regressor_DBN.fit(x_train, y_trian)
+    regressor_DBN.fit(x_train, y_train)
     pred = regressor_DBN.predict(x_test)
     message_queue.put(pred)
     return

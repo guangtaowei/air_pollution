@@ -35,10 +35,10 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, 
     sys.path.append(path_DBN)
     from dbn.tensorflow import SupervisedDBNRegression
 
-    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[50, 20, 5],
+    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[200, 100, 20],
                                             learning_rate_rbm=learning_rate_rbm,
                                             learning_rate=learning_rate,
-                                            n_epochs_rbm=50,
+                                            n_epochs_rbm=100,
                                             n_iter_backprop=50,
                                             batch_size=batch_size,
                                             activation_function='sigmoid',
@@ -59,6 +59,7 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, 
     if is_predict:
         pred = regressor_DBN.predict(x_test)
         message_queue.put(pred)
+    # print(regressor_DBN.predict(x_train))
     return
 
 
@@ -91,10 +92,10 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         x_test = np.array(feature[i])
         y_test = np.array(label[i:i + 1])[0]
 
-        x_train_trandition = (x_train_trandition - x_train_trandition.min()) / (
+        '''x_train_trandition = (x_train_trandition - x_train_trandition.min()) / (
         x_train_trandition.max() - x_train_trandition.min())
         x_train_online = (x_train_online - x_train_online.min()) / (x_train_online.max() - x_train_online.min())
-        x_test = (x_test - x_test.min()) / (x_test.max() - x_test.min())
+        x_test = (x_test - x_test.min()) / (x_test.max() - x_test.min())'''
 
         message_queue = Queue()
         # dict_queue = Queue()
@@ -163,7 +164,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         r2_score(corrects, predictions_online), mean_squared_error(corrects, predictions_online)))
 
 
-def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.1, learning_rate=0.1, batch_size=8,
+def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.05, learning_rate=0.05, batch_size=4,
          train_deep=100, step=100):
     feature = np.array([])
     for start in range(step, data.shape[0] + 1):
@@ -173,7 +174,7 @@ def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.1, learni
 
     train_model_func(learning_rate_rbm=learning_rate_rbm, learning_rate=learning_rate, batch_size=batch_size,
                      feature=feature, label=label, path_out_png=path_out_png, path_out_txt=path_out_txt,
-                     train_deep=train_deep, start_predict=0)
+                     train_deep=train_deep, start_predict=50)
 
 
 if __name__ == "__main__":
@@ -192,14 +193,12 @@ if __name__ == "__main__":
     data = data.drop([data.shape[0] - 1])
     data = data.drop(["date"], axis=1)
 
-    '''for col_name in data.columns:
-        data[col_name]=(data[col_name]-data[col_name].min())/(data[col_name].max()-data[col_name].min())'''
+    for col_name in data.columns:
+        data[col_name] = (data[col_name] - data[col_name].min()) / (data[col_name].max() - data[col_name].min())
 
     # min_max_scaler = MinMaxScaler()
     # data = min_max_scaler.fit_transform(data)
 
     # print(type(data))
-
-
 
     sys.exit(main(data=data, target=target, path_out_png=path_out_png, path_out_txt=path_out_txt))

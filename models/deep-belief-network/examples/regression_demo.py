@@ -22,7 +22,7 @@ X, Y = boston.data, boston.target
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=1337)
 
 # Data scaling
-#min_max_scaler = MinMaxScaler()
+min_max_scaler = MinMaxScaler()
 #X_train = min_max_scaler.fit_transform(X_train)
 
 # Training
@@ -32,7 +32,8 @@ regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
                                     n_epochs_rbm=20,
                                     n_iter_backprop=200,
                                     batch_size=16,
-                                    activation_function='relu')
+                                    activation_function='relu',
+                                    verbose=False)
 regressor.fit(X_train, Y_train)
 
 # Test

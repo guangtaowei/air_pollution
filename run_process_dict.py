@@ -43,18 +43,18 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, 
                                             batch_size=batch_size,
                                             activation_function='sigmoid',
                                             verbose=False)
-    #dict = dict_queue.get()
+    # dict = dict_queue.get()
 
     if os.path.exists(model_name):
-        #regressor_DBN.from_dict(dict)
-        regressor_DBN=SupervisedDBNRegression.load(model_name)
+        # regressor_DBN.from_dict(dict)
+        regressor_DBN = SupervisedDBNRegression.load(model_name)
 
     if is_fit:
         regressor_DBN.fit(x_train, y_train)
 
-    #dict_queue.put(regressor_DBN.to_dict())
+    # dict_queue.put(regressor_DBN.to_dict())
     regressor_DBN.save(model_name)
-    #print("save ready")
+    # print("save ready")
 
     if is_predict:
         pred = regressor_DBN.predict(x_test)
@@ -75,7 +75,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
     dict_online = None
     is_fit_trandition = True
     is_predict = False
-    model_name_trandition='model_tradition.pkl'
+    model_name_trandition = 'model_tradition.pkl'
     model_name_online = 'model_online.pkl'
 
     if os.path.exists(model_name_trandition):
@@ -91,13 +91,18 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         x_test = np.array(feature[i])
         y_test = np.array(label[i:i + 1])[0]
 
+        x_train_trandition = (x_train_trandition - x_train_trandition.min()) / (
+        x_train_trandition.max() - x_train_trandition.min())
+        x_train_online = (x_train_online - x_train_online.min()) / (x_train_online.max() - x_train_online.min())
+        x_test = (x_test - x_test.min()) / (x_test.max() - x_test.min())
+
         message_queue = Queue()
-        #dict_queue = Queue()
+        # dict_queue = Queue()
 
         if i >= start_predict + train_deep:
             is_predict = True
 
-        #dict_queue.put(dict_trandition)
+        # dict_queue.put(dict_trandition)
         _process = Process(target=train_model, args=(
             learning_rate_rbm, learning_rate, batch_size, x_train_trandition, y_trian_trandition, x_test,
             message_queue, model_name_trandition, is_fit_trandition, is_predict))
@@ -105,10 +110,10 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         _process.join()
         if is_predict:
             prediction_trandition = message_queue.get()[0][0]
-        #dict_trandition = dict_queue.get()
+        # dict_trandition = dict_queue.get()
         is_fit_trandition = False
 
-        #dict_queue.put(dict_online)
+        # dict_queue.put(dict_online)
         _process = Process(target=train_model, args=(
             learning_rate_rbm, learning_rate, batch_size, x_train_online, y_trian_online, x_test, message_queue,
             model_name_online, True, is_predict))
@@ -116,7 +121,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         _process.join()
         if is_predict:
             prediction_online = message_queue.get()[0][0]
-        #dict_online = dict_queue.get()
+        # dict_online = dict_queue.get()
 
         if is_predict:
             corrects.append(y_test)
@@ -179,7 +184,7 @@ if __name__ == "__main__":
     path_data = "data/airdata.csv"
     data = pd.read_csv(path_data, sep=",")
 
-    #print(type(data['date'][0]))
+    # print(type(data['date'][0]))
 
     target = data["pm25"]
     target = target.drop([0])
@@ -187,13 +192,13 @@ if __name__ == "__main__":
     data = data.drop([data.shape[0] - 1])
     data = data.drop(["date"], axis=1)
 
-    for col_name in data.columns:
-        data[col_name]=(data[col_name]-data[col_name].min())/(data[col_name].max()-data[col_name].min())
+    '''for col_name in data.columns:
+        data[col_name]=(data[col_name]-data[col_name].min())/(data[col_name].max()-data[col_name].min())'''
 
-    #min_max_scaler = MinMaxScaler()
-    #data = min_max_scaler.fit_transform(data)
+    # min_max_scaler = MinMaxScaler()
+    # data = min_max_scaler.fit_transform(data)
 
-    #print(type(data))
+    # print(type(data))
 
 
 

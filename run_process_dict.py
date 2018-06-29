@@ -138,11 +138,17 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
 
             x_range = range(i - train_deep - start_predict + 1)
             plt.clf()
-            plt.ylabel('RMSE')
+            '''plt.ylabel('RMSE')
             plt.xlabel('hours')
             plt.title("DBN_tradition VS. DBN_online")
             plt.plot(x_range, RMSEs_trandition, marker='o', label="DBN_tradition")
-            plt.plot(x_range, RMSEs_online, marker='o', label="DBN_online")
+            plt.plot(x_range, RMSEs_online, marker='o', label="DBN_online")'''
+            plt.ylabel('pred_num')
+            plt.xlabel('hours')
+            plt.title("DBN_tradition VS. DBN_online")
+            plt.plot(x_range, predictions_trandition, marker='o', label="DBN_tradition")
+            plt.plot(x_range, predictions_online, marker='o', label="DBN_online")
+            plt.plot(x_range, corrects, marker='o', label="correct")
             plt.legend(loc='best')
             plt.savefig(path_out_png)
 

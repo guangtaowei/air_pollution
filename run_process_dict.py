@@ -158,7 +158,7 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         r2_score(corrects, predictions_online), mean_squared_error(corrects, predictions_online)))
 
 
-def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.01, learning_rate=0.01, batch_size=8,
+def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.1, learning_rate=0.1, batch_size=8,
          train_deep=100, step=100):
     feature = np.array([])
     for start in range(step, data.shape[0] + 1):
@@ -179,10 +179,22 @@ if __name__ == "__main__":
     path_data = "data/airdata.csv"
     data = pd.read_csv(path_data, sep=",")
 
+    #print(type(data['date'][0]))
+
     target = data["pm25"]
     target = target.drop([0])
 
     data = data.drop([data.shape[0] - 1])
     data = data.drop(["date"], axis=1)
+
+    for col_name in data.columns:
+        data[col_name]=(data[col_name]-data[col_name].min())/(data[col_name].max()-data[col_name].min())
+
+    #min_max_scaler = MinMaxScaler()
+    #data = min_max_scaler.fit_transform(data)
+
+    #print(type(data))
+
+
 
     sys.exit(main(data=data, target=target, path_out_png=path_out_png, path_out_txt=path_out_txt))

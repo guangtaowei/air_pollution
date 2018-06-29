@@ -6,6 +6,11 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics.regression import r2_score, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 
+import os
+import sys
+path_DBN = os.path.dirname(os.getcwd())
+#print(path_DBN)
+sys.path.append(path_DBN)
 from dbn.tensorflow import SupervisedDBNRegression
 
 
@@ -17,8 +22,8 @@ X, Y = boston.data, boston.target
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=1337)
 
 # Data scaling
-min_max_scaler = MinMaxScaler()
-X_train = min_max_scaler.fit_transform(X_train)
+#min_max_scaler = MinMaxScaler()
+#X_train = min_max_scaler.fit_transform(X_train)
 
 # Training
 regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
@@ -31,6 +36,9 @@ regressor = SupervisedDBNRegression(hidden_layers_structure=[100],
 regressor.fit(X_train, Y_train)
 
 # Test
-X_test = min_max_scaler.transform(X_test)
-Y_pred = regressor.predict(X_test)
-print('Done.\nR-squared: %f\nMSE: %f' % (r2_score(Y_test, Y_pred), mean_squared_error(Y_test, Y_pred)))
+#X_test = min_max_scaler.transform(X_test)
+#Y_pred = regressor.predict(X_test)
+#print('Done.\nR-squared: %f\nMSE: %f' % (r2_score(Y_test, Y_pred), mean_squared_error(Y_test, Y_pred)))
+#print(Y_test.size)
+for i in range(Y_test.size):
+    print( regressor.predict(X_test[i])[0][0],Y_test[i])

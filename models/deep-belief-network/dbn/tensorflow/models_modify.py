@@ -275,7 +275,7 @@ class UnsupervisedDBN(BaseUnsupervisedDBN, BaseTensorFlowModel):
 
 class TensorFlowAbstractSupervisedDBN(BaseAbstractSupervisedDBN, BaseTensorFlowModel):
     __metaclass__ = ABCMeta
-    _is_init_zsd=False
+    is_build_model = False
 
     def __init__(self, **kwargs):
         super(TensorFlowAbstractSupervisedDBN, self).__init__(UnsupervisedDBN, **kwargs)
@@ -366,16 +366,15 @@ class TensorFlowAbstractSupervisedDBN(BaseAbstractSupervisedDBN, BaseTensorFlowM
         self.cost_function = None
         self.output = None
 
-        self._is_init_zsd=True
-
     def _fine_tuning(self, data, _labels):
         self.num_classes = self._determine_num_output_neurons(_labels)
         if self.num_classes == 1:
             _labels = np.expand_dims(_labels, -1)
 
-        if not self._is_init_zsd:
+        if not self.is_build_model:
             self._build_model()
             sess.run(tf.variables_initializer([self.W, self.b]))
+            self.is_build_model = True
 
         labels = self._transform_labels_to_network_format(_labels)
 

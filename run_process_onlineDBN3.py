@@ -27,7 +27,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 np.random.seed(1337)  # for reproducibility
 logging.basicConfig(level=logging.INFO)
 
-path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
+# path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
+path_DBN = os.path.join(os.path.join(os.getcwd( ), "models"), "deep-belief-network")
 sys.path.append(path_DBN)
 from dbn.tensorflow import SupervisedDBNRegression
 

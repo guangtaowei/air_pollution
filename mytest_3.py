@@ -3,9 +3,25 @@ import sys
 import tensorflow as tf
 import numpy as np
 
-path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
-sys.path.append(path_DBN)
-from dbn.tensorflow import SupervisedDBNRegression
+def myfit(x_train,y_train,dict=None):
+    path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
+    sys.path.append(path_DBN)
+    from dbn.tensorflow import SupervisedDBNRegression
+    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[20, 10, 1],
+                                            learning_rate_rbm=0.1,
+                                            learning_rate=0.2,
+                                            n_epochs_rbm=10,
+                                            n_iter_backprop=2,
+                                            batch_size=1,
+                                            activation_function='sigmoid',
+                                            verbose=False)
+    if dict is not None:
+        regressor_DBN.from_dict(dict)
+        regressor_DBN.fit(x_train[i].reshape(1,x_train[i].shape[0]), y_train[i],pre_train=True)
+    else:
+        regressor_DBN.fit(x_train[i].reshape(1, x_train[i].shape[0]), y_train[i], pre_train=True)
+    return  regressor_DBN
+
 
 x_train = np.array(
     [[0, 22, 48, 26, 3, 25, 0.7, 4.7, 2, 60, 92, 1017.8, 0], [1, 13, 54, 26, 3, 19, 0.7, 4.4, 2, 10, 95, 1019.2, 2.6],
@@ -17,18 +33,14 @@ y_train = np.array([[13], [9], [14], [18], [16], [15], [21], [18], [23], [22]])
 
 x_test = np.array([[10, 22, 34, 34, 4, 48, 0.7, 5.5, 2, 10, 91, 1018.2, 0]])
 
-regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[20,10,1],
-                                        learning_rate_rbm=0.01,
-                                        learning_rate=0.01,
-                                        n_epochs_rbm=20,
-                                        n_iter_backprop=200,
-                                        batch_size=1,
-                                        activation_function='sigmoid',
-                                        verbose=False)
 
+dict=None
 for i in range(9):
-    print("\ni=", i)
+    #print("\ni=", i)
     #print(x_train[i],y_train[i],x_train[i].shape)
-    regressor_DBN.fit(x_train[i].reshape(1,x_train[i].shape[0]), y_train[i])
+    regressor_DBN=myfit(x_train,y_train,dict)
+    dict = regressor_DBN.to_dict()
     pred = regressor_DBN.predict(x_train[i+1])
     print("\t", pred, y_train[i+1])
+
+

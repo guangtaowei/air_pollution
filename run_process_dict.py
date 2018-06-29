@@ -28,27 +28,34 @@ np.random.seed(1337)  # for reproducibility
 logging.basicConfig(level=logging.INFO)
 
 
-def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, x_test, message_queue, dict_queue,
+def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, x_test, message_queue, model_name,
                 is_fit, is_predict):
     # path_DBN = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"), "deep-belief-network")
     path_DBN = os.path.join(os.path.join(os.getcwd(), "models"), "deep-belief-network")
     sys.path.append(path_DBN)
     from dbn.tensorflow import SupervisedDBNRegression
 
-    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[20, 10, 2],
+    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[50, 20, 5],
                                             learning_rate_rbm=learning_rate_rbm,
                                             learning_rate=learning_rate,
-                                            n_epochs_rbm=20,
-                                            n_iter_backprop=20,
+                                            n_epochs_rbm=50,
+                                            n_iter_backprop=50,
                                             batch_size=batch_size,
                                             activation_function='sigmoid',
                                             verbose=False)
-    dict = dict_queue.get()
-    if dict is not None:
-        regressor_DBN.from_dict(dict)
+    #dict = dict_queue.get()
+
+    if os.path.exists(model_name):
+        #regressor_DBN.from_dict(dict)
+        regressor_DBN=SupervisedDBNRegression.load(model_name)
+
     if is_fit:
         regressor_DBN.fit(x_train, y_train)
-    dict_queue.put(regressor_DBN.to_dict())
+
+    #dict_queue.put(regressor_DBN.to_dict())
+    regressor_DBN.save(model_name)
+    #print("save ready")
+
     if is_predict:
         pred = regressor_DBN.predict(x_test)
         message_queue.put(pred)
@@ -68,6 +75,13 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
     dict_online = None
     is_fit_trandition = True
     is_predict = False
+    model_name_trandition='model_tradition.pkl'
+    model_name_online = 'model_online.pkl'
+
+    if os.path.exists(model_name_trandition):
+        os.remove(model_name_trandition)
+    if os.path.exists(model_name_online):
+        os.remove(model_name_online)
 
     for i in range(train_deep, label.shape[0]):
         x_train_trandition = np.array(feature[0:start_predict + train_deep])
@@ -78,31 +92,31 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         y_test = np.array(label[i:i + 1])[0]
 
         message_queue = Queue()
-        dict_queue = Queue()
+        #dict_queue = Queue()
 
         if i >= start_predict + train_deep:
             is_predict = True
 
-        dict_queue.put(dict_trandition)
+        #dict_queue.put(dict_trandition)
         _process = Process(target=train_model, args=(
             learning_rate_rbm, learning_rate, batch_size, x_train_trandition, y_trian_trandition, x_test,
-            message_queue, dict_queue, is_fit_trandition, is_predict))
+            message_queue, model_name_trandition, is_fit_trandition, is_predict))
         _process.start()
         _process.join()
         if is_predict:
             prediction_trandition = message_queue.get()[0][0]
-        dict_trandition = dict_queue.get()
+        #dict_trandition = dict_queue.get()
         is_fit_trandition = False
 
-        dict_queue.put(dict_online)
+        #dict_queue.put(dict_online)
         _process = Process(target=train_model, args=(
             learning_rate_rbm, learning_rate, batch_size, x_train_online, y_trian_online, x_test, message_queue,
-            dict_queue, True, is_predict))
+            model_name_online, True, is_predict))
         _process.start()
         _process.join()
         if is_predict:
             prediction_online = message_queue.get()[0][0]
-        dict_online = dict_queue.get()
+        #dict_online = dict_queue.get()
 
         if is_predict:
             corrects.append(y_test)
@@ -138,8 +152,8 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         r2_score(corrects, predictions_online), mean_squared_error(corrects, predictions_online)))
 
 
-def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.01, learning_rate=0.01, batch_size=2,
-         train_deep=10, step=10):
+def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.01, learning_rate=0.01, batch_size=8,
+         train_deep=100, step=100):
     feature = np.array([])
     for start in range(step, data.shape[0] + 1):
         feature = np.append(feature, data[start - step:start].values)

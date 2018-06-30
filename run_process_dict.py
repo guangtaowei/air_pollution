@@ -35,11 +35,11 @@ def train_model(learning_rate_rbm, learning_rate, batch_size, x_train, y_train, 
     sys.path.append(path_DBN)
     from dbn.tensorflow import SupervisedDBNRegression
 
-    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[200, 100, 20],
+    regressor_DBN = SupervisedDBNRegression(hidden_layers_structure=[10000, 2000, 1000, 500, 200, 100, 20],
                                             learning_rate_rbm=learning_rate_rbm,
                                             learning_rate=learning_rate,
-                                            n_epochs_rbm=100,
-                                            n_iter_backprop=50,
+                                            n_epochs_rbm=5,
+                                            n_iter_backprop=2,
                                             batch_size=batch_size,
                                             activation_function='sigmoid',
                                             verbose=False)
@@ -136,10 +136,10 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
             RMSEs_online.append(RMSE_online)
 
             with open(path_out_txt, 'a') as f:
-                f.write("pred_trad:%.2f\tpred_online:%.2f\tcorrect:%.2f\t\tRMSE_pred:%.15f\tRMSE_online:%.15f" % (
+                f.write("pred_trad:%f\tpred_online:%f\tcorrect:%.2f\t\tRMSE_pred:%.15f\tRMSE_online:%.15f" % (
                     prediction_trandition, prediction_online, y_test, RMSE_trandition, RMSE_online,))
 
-            print("\t\ti=%d\t\tpred_trad:%.2f\tpred_online:%.2f\tcorrect:%.2f\t\tRMSE_pred:%.15f\tRMSE_online:%.15f" % (
+            print("i=%d\t\tpred_trad:%f\tpred_online:%f\tcorrect:%.2f\t\tRMSE_pred:%.10f\tRMSE_online:%.10f" % (
                 i, prediction_trandition, prediction_online, y_test, RMSE_trandition, RMSE_online,))
 
             x_range = range(i - train_deep - start_predict + 1)
@@ -157,6 +157,8 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
             plt.plot(x_range, corrects, marker='o', label="correct")
             plt.legend(loc='best')
             plt.savefig(path_out_png)
+        else:
+            print("i=",i)
 
     print('Done.\nDBN_pred:\tR-squared: %f\nMSE: %f' % (
         r2_score(corrects, predictions_trandition), mean_squared_error(corrects, predictions_trandition)))
@@ -164,8 +166,8 @@ def train_model_func(learning_rate_rbm, learning_rate, batch_size, feature, labe
         r2_score(corrects, predictions_online), mean_squared_error(corrects, predictions_online)))
 
 
-def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.05, learning_rate=0.05, batch_size=4,
-         train_deep=100, step=100):
+def main(data, target, path_out_png, path_out_txt, learning_rate_rbm=0.01, learning_rate=0.01, batch_size=2,
+         train_deep=1, step=100):
     feature = np.array([])
     for start in range(step, data.shape[0] + 1):
         feature = np.append(feature, data[start - step:start].values)
